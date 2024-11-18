@@ -39,6 +39,10 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+    
+    def __repr__(self):
+        return f"{self.x}, {self.y}"
+    
 
 class Line:
     def __init__(self, point_a, point_b):
@@ -64,18 +68,25 @@ class Cell:
         self._top_right = Point(max(self._x1, self._x2), min(self._y1, self._y2))
         self._bottom_right = Point(max(self._x1, self._x2), max(self._y1, self._y2))
         self._center = Point(((self._x1+self._x2)/2), ((self._y1+self._y2)/2))
-        self._canvas = win.get_canvas()
+        self._top = Line(self._top_left, self._top_right)
+        self._bottom = Line(self._bottom_left, self._bottom_right)
+        self._left = Line(self._top_left, self._bottom_left)
+        self._right = Line(self._top_right, self._bottom_right)
+        self.visited = False
+        
+        if win is not None:
+            self._canvas = win.get_canvas()
 
 
     def draw(self, fill_color):
         if self.has_left_wall:
-            Line(self._top_left, self._bottom_left).draw(self._canvas, fill_color)
+            self._left.draw(self._canvas, fill_color)
         if self.has_right_wall:
-            Line(self._top_right, self._bottom_right).draw(self._canvas, fill_color)
+            self._right.draw(self._canvas, fill_color)
         if self.has_top_wall:
-            Line(self._top_left, self._top_right).draw(self._canvas, fill_color)
+            self._top.draw(self._canvas, fill_color)
         if self.has_bottom_wall:
-            Line(self._bottom_left, self._bottom_right).draw(self._canvas, fill_color)
+            self._bottom.draw(self._canvas, fill_color)
 
     def draw_move(self, to_cell, undo=False):
         color = "red"
